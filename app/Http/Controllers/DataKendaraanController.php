@@ -42,10 +42,12 @@ class DataKendaraanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_polisi'       => 'required|string|max:20',
+            'no_polisi'       => 'required|string|max:20|unique:data_kendaraans,no_polisi',
             'jenis_kendaraan' => 'required|string',
             'pemilik'         => 'required|string',
             'status_pemilik'  => 'required|string',
+        ], [
+            'no_polisi.unique' => 'Nomor polisi ini sudah terdaftar.',
         ]);
 
         DataKendaraan::create($request->only(['no_polisi', 'jenis_kendaraan', 'pemilik', 'status_pemilik']));
@@ -68,7 +70,7 @@ class DataKendaraanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'no_polisi'       => 'required|string|max:20',
+            'no_polisi'       => 'required|string|max:20|unique:data_kendaraans,no_polisi,' . $id,
             'jenis_kendaraan' => 'required|string',
             'pemilik'         => 'required|string',
             'status_pemilik'  => 'required|string',

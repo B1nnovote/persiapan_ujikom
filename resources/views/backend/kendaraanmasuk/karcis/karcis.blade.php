@@ -5,76 +5,72 @@
   <title>Karcis Parkir</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Bootstrap & FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
     body {
       background-color: #f5f5f9;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 40px 20px;
+      font-family: monospace;
+      padding: 20px 10px;
       text-align: center;
     }
+
     .karcis-box {
-      border: 2px dashed #696cff;
-      padding: 40px 30px;
-      max-width: 420px;
+      border: 1px dashed #999;
+      padding: 20px 14px;
+      width: 20%;
       margin: auto;
       background-color: #fff;
+      font-size: 12px;
+      line-height: 1.4;
     }
-    .karcis-box h5 {
-      color: #696cff;
-      font-weight: 600;
-      margin-bottom: 30px;
+
+    .karcis-title {
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
     }
+
+    .divider {
+      border-top: 1px dashed #999;
+      margin: 6px 0;
+    }
+
     .karcis-table {
       width: 100%;
       text-align: left;
-      margin-bottom: 15px;
-      font-size: 1rem;
+      margin-bottom: 6px;
     }
+
     .karcis-table td {
-      padding: 6px 0;
+      padding: 1px 0;
       vertical-align: top;
     }
+
     .karcis-table td:first-child {
-      font-weight: 600;
-      width: 100px;
-      color: #333;
+      width: 50px;
     }
-    .karcis-table td:last-child {
-      color: #555;
-    }
+
     .info {
-      font-size: 0.85rem;
-      color: #6c757d;
-      margin-top: 12px;
+      font-size: 10px;
+      margin-top: 6px;
+      line-height: 1.3;
     }
+
     .btn-group-custom {
-      margin-top: 30px;
-    }
-    .btn-sneat {
-      background-color: #696cff;
-      color: white;
-      font-weight: 500;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 5px;
-      margin: 5px;
-      font-size: 0.9rem;
-    }
-    .btn-sneat:hover {
-      background-color: #5a5bd3;
+      margin-top: 16px;
     }
   </style>
 </head>
 <body>
 
   <div class="karcis-box shadow-sm">
-    <h5><i class="fas fa-ticket-alt me-1"></i>Karcis Parkir</h5>
+    <div class="divider"></div>
+    <div class="karcis-title">KARCIS PARKIR</div>
+    <div class="divider"></div>
 
-    <table class="karcis-table mx-auto">
+    <table class="karcis-table">
       <tr>
         <td>Plat</td>
         <td>: {{ $data->dataKendaraan->no_polisi }}</td>
@@ -85,19 +81,29 @@
       </tr>
       <tr>
         <td>Masuk</td>
-        <td>: {{ \Carbon\Carbon::parse($data->waktu_masuk)->format('d-m-Y H:i') }}</td>
+        <td>: {{ \Carbon\Carbon::parse($data->waktu_masuk)->format('d-m-Y') }}</td>
+      </tr>
+      <tr>
+        <td>Jam</td>
+        <td>: {{ \Carbon\Carbon::parse($data->waktu_masuk)->format('H:i') }}</td>
       </tr>
     </table>
 
-    <p class="info">Simpan karcis ini. Wajib ditunjukkan saat keluar.</p>
+    <div class="info">
+      Simpan karcis ini<br>
+      Wajib ditunjukkan saat keluar
+    </div>
+
+    <div class="divider"></div>
+    <div class="info">Parkir Otomatis • Sistem</div>
   </div>
 
   <div class="btn-group-custom text-center">
-    <a href="{{ route('kendaraanmasuk.karcis.pdf', $data->id) }}" class="btn btn-sneat">
-      <i class="fas fa-download me-1"></i> Cetak PDF
+    <a href="{{ route('kendaraanmasuk.karcis.pdf', $data->id) }}" class="btn btn-sm btn-primary">
+      Cetak
     </a>
-    <a href="{{ route('kendaraanmasuk.index') }}" class="btn btn-outline-secondary">
-      <i class="fas fa-home me-1"></i> Kembali
+    <a href="{{ route('kendaraanmasuk.index') }}" class="btn btn-sm btn-outline-secondary">
+      Kembali
     </a>
   </div>
 

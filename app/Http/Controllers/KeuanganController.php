@@ -2,8 +2,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Keuangan;
-use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class KeuanganController extends Controller
 {
@@ -39,19 +40,20 @@ class KeuanganController extends Controller
         $request->validate([
             'id_pembayaran'   => 'required|exists:pembayarans,id',
             'jumlah'          => 'required|numeric|min:0',
-            'keterangan' => 'required|in:biaya_parkir,kompensasi,tiket_hilang,denda,lainnya',
+            'keterangan'      => 'required|in:biaya_parkir,kompensasi,tiket_hilang,denda,lainnya',
             'jenis_transaksi' => 'required|in:pemasukan,pengeluaran',
         ]);
 
         Keuangan::create([
             'id_pembayaran'   => $request->id_pembayaran,
             'jumlah'          => $request->jumlah,
-            'keterangan' => $request->keterangan,
+            'keterangan'      => $request->keterangan,
             'jenis_transaksi' => $request->jenis_transaksi,
             'waktu_transaksi' => now(),
         ]);
 
-        return redirect()->route('keuangan.index')->with('success', 'Data keuangan berhasil disimpan!');
+        Alert::success('Berhasil!', 'Data keuangan berhasil disimpan!');
+        return redirect()->route('keuangan.index');
     }
 
     /**
@@ -61,8 +63,8 @@ class KeuanganController extends Controller
     {
         $data = Keuangan::findOrFail($id);
         $data->delete();
+        return redirect()->route('keuangan.index')->with('success', 'Data berhasil dihapus!');
 
-        return redirect()->route('keuangan.index')->with('success', 'Data keuangan berhasil dihapus!');
     }
 
     /**

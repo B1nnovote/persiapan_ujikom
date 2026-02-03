@@ -48,13 +48,18 @@
                 <select name="status_keluar" class="form-select" style="max-width: 200px;">
                     <option value="">Semua</option>
                     <option value="baik" {{ request('status_keluar') == 'baik' ? 'selected' : '' }}>Baik</option>
-                    <option value="karcis hilang" {{ request('status_keluar') == 'karcis hilang' ? 'selected' : '' }}>Karcis Hilang</option>
-                    <option value="kerusakan" {{ request('status_keluar') == 'kerusakan' ? 'selected' : '' }}>Kerusakan</option>
-                    <option value="kehilangan" {{ request('status_keluar') == 'kehilangan' ? 'selected' : '' }}>Kehilangan</option>
-                    <option value="merusak" {{ request('status_keluar') == 'merusak' ? 'selected' : '' }}>Merusak</option>
+                    <option value="karcis hilang" {{ request('status_keluar') == 'karcis hilang' ? 'selected' : '' }}>
+                        Karcis Hilang</option>
+                    <option value="kerusakan" {{ request('status_keluar') == 'kerusakan' ? 'selected' : '' }}>Kerusakan
+                    </option>
+                    <option value="kehilangan" {{ request('status_keluar') == 'kehilangan' ? 'selected' : '' }}>
+                        Kehilangan</option>
+                    <option value="merusak" {{ request('status_keluar') == 'merusak' ? 'selected' : '' }}>Merusak
+                    </option>
                 </select>
 
-                <input type="date" name="tanggal_keluar" class="form-control" style="max-width: 200px;" value="{{ request('tanggal_keluar') }}">
+                <input type="date" name="tanggal_keluar" class="form-control" style="max-width: 200px;"
+                    value="{{ request('tanggal_keluar') }}">
 
                 <button type="submit" class="btn btn-dark"><i class="bx bx-filter"></i> Filter</button>
                 <a href="{{ route('kendaraankeluar.index') }}" class="btn btn-outline-secondary">Reset</a>
@@ -84,16 +89,23 @@
                                 <tr>
                                     <td>{{ \Carbon\Carbon::parse($row->waktu_keluar)->format('d-m-Y H:i') }}</td>
                                     <td>
-                                        <span class="badge badge-status {{ $row->status_kondisi === 'baik' ? 'bg-success' : 'bg-danger' }}">
+                                        <span
+                                            class="badge badge-status {{ $row->status_kondisi === 'baik' ? 'bg-success' : 'bg-danger' }}">
                                             {{ ucfirst($row->status_kondisi) }}
                                         </span>
                                     </td>
                                     <td>{{ $row->kendaraanMasuk->dataKendaraan->no_polisi ?? '-' }}</td>
                                     <td>{{ ucfirst($row->kendaraanMasuk->dataKendaraan->jenis_kendaraan ?? '-') }}</td>
                                     <td>
-                                        <form action="{{ route('kendaraankeluar.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin hapus?')" class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button class="btn btn-sm btn-outline-danger"><i class="bx bx-trash"></i></button>
+                                        <form id="form-delete-{{ $row->id }}"
+                                            action="{{ route('kendaraankeluar.destroy', $row->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                onclick="confirmDelete({{ $row->id }})">
+                                                <i class="bx bx-trash"></i>
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
@@ -107,9 +119,37 @@
                 </div>
             </div>
         </div>
-
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Yakin mau hapus?',
+                text: "Data kendaraan akan terhapus permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#696cff',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        @endif
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

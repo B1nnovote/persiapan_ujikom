@@ -5,15 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Kendaraan</title>
-    <!-- jQuery -->
+
+    <!-- jQuery & jQuery UI -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- jQuery UI -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-
-    <!-- Boxicons -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Boxicons & Bootstrap -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -30,33 +29,25 @@
                         style="pointer-events: none; font-size:30px;">
                         Data Kendaraan
                     </span>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('datakendaraan.create') }}" class="btn"
-                                style="background-color:#696cff; color:white;">
-                                <i class="bx bx-plus"></i> Tambah
-                            </a>
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('datakendaraan.create') }}" class="btn"
+                            style="background-color:#696cff; color:white;">
+                            <i class="bx bx-plus"></i> Tambah
+                        </a>
 
-                            <a href="{{ route('datakendaraan.export.pdf', request()->query()) }}"
-                                class="btn btn-danger">
-                                <i class="bx bxs-file-pdf"></i> Export PDF
-                            </a>
+                        <a href="{{ route('datakendaraan.export.pdf', request()->query()) }}"
+                            class="btn btn-danger">
+                            <i class="bx bxs-file-pdf"></i> Export PDF
+                        </a>
 
-                            <a href="{{ route('datakendaraan.export.excel', request()->query()) }}"
-                                class="btn btn-success">
-                                <i class="bx bxs-file-export"></i> Export Excel
-                            </a>
-                        </div>
+                        <a href="{{ route('datakendaraan.export.excel', request()->query()) }}"
+                            class="btn btn-success">
+                            <i class="bx bxs-file-export"></i> Export Excel
+                        </a>
                     </div>
                 </div>
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
 
-                <!-- Search Bar Only -->
+                <!-- Search -->
                 <form action="{{ route('datakendaraan.index') }}" method="GET" class="mb-3">
                     <div class="input-group" style="max-width: 500px;">
                         <input type="text" id="search-kendaraan" name="search" class="form-control"
@@ -64,10 +55,10 @@
                             value="{{ request('search') }}">
                         <button class="btn btn-dark" type="submit"><i class="bx bx-search"></i></button>
                         <a href="{{ route('datakendaraan.index') }}" class="btn btn-outline-secondary ms-2">Reset</a>
-
                     </div>
                 </form>
 
+                <!-- Table -->
                 <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -100,8 +91,9 @@
                                                     <a href="{{ route('datakendaraan.edit', $data->id) }}"
                                                         class="btn btn-sm btn-warning"><i class="bx bx-edit"></i></a>
                                                     <span style=" font-size:20px;">|</span>
-                                                    <form action="{{ route('datakendaraan.destroy', $data->id) }}"
-                                                        method="POST" onsubmit="return confirm('Yakin hapus?')">
+                                                    <form onsubmit="return confirmDelete(this);"
+                                                        action="{{ route('datakendaraan.destroy', $data->id) }}"
+                                                        method="POST" style="display:inline;">
                                                         @csrf @method('DELETE')
                                                         <button class="btn btn-sm btn-danger"><i
                                                                 class="bx bx-trash"></i></button>
@@ -128,9 +120,8 @@
         </main>
     </section>
 
-    <!-- Scripts -->
-
     <script>
+        // Autocomplete
         $(function() {
             $("#search-kendaraan").autocomplete({
                 source: function(request, response) {
@@ -144,9 +135,40 @@
                         }
                     });
                 },
-                minLength: 2, // mulai nyari setelah 2 huruf
+                minLength: 2
             });
         });
+
+        // SweetAlert Session
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            })
+        @endif
+
+        // SweetAlert Confirm Delete
+        function confirmDelete(form) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Yakin?',
+                text: "Data kendaraan akan dihapus!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#696cff',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

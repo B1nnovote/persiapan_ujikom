@@ -14,7 +14,7 @@ use App\Http\Middleware\Petugas;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 // Auth::routes(['register' => false]);
@@ -48,6 +48,7 @@ Route::get('/pembayaran/export/pdf', [PembayaranController::class, 'exportPdf'])
 Route::get('/pembayaran/export/excel', [PembayaranController::class, 'exportExcel'])->name('pembayaran.export.excel');
 
 // filter-export kompensasi
+
 Route::get('/kompensasi/export/pdf', [KompensasiController::class, 'exportPdf'])->name('kompensasi.export.pdf');
 Route::get('/kompensasi/export/excel', [KompensasiController::class, 'exportExcel'])->name('kompensasi.export.excel');
 Route::get('/autocomplete-nopol', [KompensasiController::class, 'autocompleteNopol'])->name('kompensasi.autocomplete-nopol');
@@ -101,6 +102,8 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', Admin::class])->group(function () {
     Route::get('/kompensasi', [KompensasiController::class, 'index'])->name('kompensasi.index');
+    Route::get('/kompensasi/{id}/approval', [KompensasiController::class, 'approval'])
+        ->name('kompensasi.approval');
     Route::put('/kompensasi/{id}/approve', [KompensasiController::class, 'approve'])->name('kompensasi.approve');
     Route::put('/kompensasi/{id}/reject', [KompensasiController::class, 'reject'])->name('kompensasi.reject');
 

@@ -74,7 +74,6 @@
                                 <th>Metode</th>
                                 <th>Jumlah</th>
                                 <th>Petugas</th>
-                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -89,14 +88,12 @@
                                             {{ ucfirst($item->pembayaran) }}
                                         </span>
                                     </td>
-                                    <td>Rp {{ number_format($item->keuangan->jumlah, 0, ',', '.') }}</td>
-                                    <td>{{ $item->petugas->name ?? '-' }}</td>
+                                    {{-- <td>Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td> --}}
                                     <td>
-                                        <a href="{{ route('keuangan.show', $item->keuangan->id ?? 0) }}"
-                                            class="btn btn-sm btn-outline-info">
-                                            <i class="bx bx-show"></i> Detail
-                                        </a>
+                                        Rp {{ number_format(optional($item->keuangan)->jumlah ?? 0, 0, ',', '.') }}
                                     </td>
+
+                                    <td>{{ $item->petugas->name ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>

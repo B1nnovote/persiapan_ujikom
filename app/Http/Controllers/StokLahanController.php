@@ -16,7 +16,7 @@ class StokLahanController extends Controller
     // Tampilkan form tambah stok
     public function create()
     {
-        if (Auth::user()->role != 1) {
+        if (Auth::user()->isAdmin != 1) {
             abort(403, 'akses dibatasi');
         }
         return view('backend.stok.create');
@@ -24,7 +24,7 @@ class StokLahanController extends Controller
 
     public function store(Request $request)
     {
-        if (Auth::user()->role != 1) {
+        if (Auth::user()->isAdmin != 1) {
             abort(403, 'akses dibatasi');
         }
 
@@ -45,7 +45,7 @@ class StokLahanController extends Controller
     // Edit stok
     public function edit($id)
     {
-        if (Auth::user()->role != 1) {
+        if (Auth::user()->isAdmin != 1) {
             abort(403, 'akses dibatasi');
         }
         $stok = StokLahan::findOrFail($id);
@@ -55,7 +55,7 @@ class StokLahanController extends Controller
     // Update stok
     public function update(Request $request, $id)
     {
-        if (Auth::user()->role != 1) {
+        if (Auth::user()->isAdmin != 1) {
             abort(403, 'akses dibatasi');
         }
 

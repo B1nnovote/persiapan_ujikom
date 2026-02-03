@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .badge-status {
@@ -32,8 +33,10 @@
                 <h4 class="fw-semibold mb-3 ms-5" style="font-size:30px;">Data Kompensasi</h4>
 
                 <div class="d-flex gap-2 me-5">
-                    <a href="{{ route('kompensasi.export.pdf', request()->only(['status', 'nopol'])) }}" class="btn btn-danger">Export PDF</a>
-                    <a href="{{ route('kompensasi.export.excel',  request()->only(['status', 'nopol']))  }}" class="btn btn-success">Export Excel</a>
+                    <a href="{{ route('kompensasi.export.pdf', request()->only(['status', 'nopol'])) }}"
+                        class="btn btn-danger">Export PDF</a>
+                    <a href="{{ route('kompensasi.export.excel', request()->only(['status', 'nopol'])) }}"
+                        class="btn btn-success">Export Excel</a>
                 </div>
             </div>
 
@@ -62,10 +65,27 @@
             <div class="card shadow-sm border-0 col-11 mx-auto">
                 <div class="card-body">
                     @if (session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @elseif(session('info'))
-                        <div class="alert alert-info">{{ session('info') }}</div>
+                        <script>
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: '{{ session('success') }}',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                        </script>
+                    @elseif (session('info'))
+                        <script>
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Info',
+                                text: '{{ session('info') }}',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                        </script>
                     @endif
+
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover align-middle text-center mb-0">
@@ -109,25 +129,21 @@
                                             </span>
                                         </td>
                                         <td class="d-flex justify-content-center gap-2 flex-wrap">
-                                            <form action="{{ route('kompensasi.approve', $item->id) }}" method="POST"
-                                                onsubmit="return confirm('Setuju kompensasi ini?')">
-                                                @csrf @method('PUT')
-                                                <button type="submit" class="btn btn-success btn-sm"><i
-                                                        class="bx bx-check"></i></button>
-                                            </form>
-
-                                            <form action="{{ route('kompensasi.reject', $item->id) }}" method="POST"
-                                                onsubmit="return confirm('Tolak kompensasi ini?')">
-                                                @csrf @method('PUT')
-                                                <button type="submit" class="btn btn-danger btn-sm"><i
-                                                        class="bx bx-x"></i></button>
-                                            </form>
-
-                                            <a href="{{ route('kompensasi.edit', $item->id) }}"
-                                                class="btn btn-warning btn-sm">
-                                                <i class="bx bx-edit"></i>
+                                            {{-- Tombol Setujui --}}
+                                            <a href="{{ route('kompensasi.approval', $item->id) }}"
+                                                class="btn btn-primary btn-sm">
+                                                <i class="bx bx-show"></i> Persetujuan 
                                             </a>
+                                            {{-- Tombol Edit --}}
+                                            @if ($item->status !== 'disetujui')
+                                                <a href="{{ route('kompensasi.edit', $item->id) }}"
+                                                    class="btn btn-warning btn-sm">
+                                                    <i class="bx bx-edit"></i>
+                                                </a>
+                                            @endif
                                         </td>
+
+
                                     </tr>
                                 @empty
                                     <tr>
@@ -150,7 +166,37 @@
             });
         });
     </script>
+    <script>
+        function approveKompensasi(id) {
+            Swal.fire({
+                title: 'Setujui kompensasi?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Setujui!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('approve-form-' + id).submit();
+                }
+            });
+        }
 
+        function rejectKompensasi(id) {
+            Swal.fire({
+                title: 'Tolak kompensasi?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Tolak!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('reject-form-' + id).submit();
+                }
+            });
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

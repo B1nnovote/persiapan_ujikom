@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -6,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 use PDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -21,8 +23,7 @@ class PetugasController extends Controller
             $query->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
         }
 
-        $petugas = $query->latest()->paginate(10)->withQueryString(); // biar filter tetap kebawa
-
+        $petugas = $query->latest()->paginate(10)->withQueryString();
         return view('backend.datapetugas.index', compact('petugas'));
     }
 
@@ -37,6 +38,7 @@ class PetugasController extends Controller
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'foto'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $foto = null;
@@ -52,7 +54,8 @@ class PetugasController extends Controller
             'isAdmin'  => 0,
         ]);
 
-        return redirect()->route('petugas.index')->with('success', 'Petugas berhasil ditambahkan.');
+        Alert::success('Berhasil!', 'Petugas berhasil ditambahkan.');
+        return redirect()->route('petugas.index');
     }
 
     public function edit($id)
@@ -68,7 +71,8 @@ class PetugasController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email,' . $petugas->id,
-            'password' => 'nullable|string|min:6|confirmed',            'foto'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'nullable|string|min:6|confirmed',
+            'foto'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $petugas->name  = $request->name;
@@ -87,7 +91,8 @@ class PetugasController extends Controller
 
         $petugas->save();
 
-        return redirect()->route('petugas.index')->with('success', 'Data petugas berhasil diperbarui.');
+        Alert::success('Berhasil!', 'Data petugas berhasil diperbarui.');
+        return redirect()->route('petugas.index');
     }
 
     public function destroy($id)
@@ -100,7 +105,8 @@ class PetugasController extends Controller
 
         $petugas->delete();
 
-        return redirect()->route('petugas.index')->with('success', 'Petugas berhasil dihapus.');
+        Alert::success('Berhasil!', 'Petugas berhasil dihapus.');
+        return redirect()->route('petugas.index');
     }
 
     public function autocomplete(Request $request)
@@ -170,5 +176,4 @@ class PetugasController extends Controller
 
         return response()->download($temp_file, $filename)->deleteFileAfterSend(true);
     }
-
 }

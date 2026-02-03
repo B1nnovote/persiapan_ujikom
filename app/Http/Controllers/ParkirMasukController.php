@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 use App\Models\DataKendaraan;
 use App\Models\KendaraanMasuk;
 use App\Models\StokLahan;
+use App\Models\Tarif;
 use Illuminate\Http\Request;
+use PDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PDF;
 
 class ParkirMasukController extends Controller
 {
@@ -94,19 +95,21 @@ class ParkirMasukController extends Controller
     public function karcis($id)
     {
         $data = KendaraanMasuk::with('dataKendaraan')->findOrFail($id);
-        return view('backend.kendaraanmasuk.karcis.karcis', compact('data'));
-    }
 
-    public function cetakPDF($id)
-    {
-        $data = KendaraanMasuk::with('dataKendaraan')->findOrFail($id);
+        $jenisKendaraan = strtolower(
+            $data->dataKendaraan->jenis_kendaraan ?? 'motor'
+        );
 
-        $customPaper = [0, 0, 226.77, 368.5];
+        $tarif = Tarif::where('jenis_kendaraan', $jenisKendaraan)
+            ->where('jenis_tarif', 'biasa')
+            ->first();
 
-        $pdf = \PDF::loadView('backend.kendaraanmasuk.karcis.pdf', compact('data'))
-            ->setPaper($customPaper, 'portrait');
+        $kodeTiket = $tarif?->kode_tiket ?? '-';
 
-        return $pdf->download('karcis-' . $data->dataKendaraan->no_polisi . '.pdf');
+        return view('backend.kendaraanmasuk.karcis.karcis', [
+            'data'      => $data,
+            'kode_tiket' => $kodeTiket,
+        ]);
     }
 
     public function exportPdf(Request $request)

@@ -41,8 +41,7 @@
 
                 <form method="GET" class="row g-2 align-items-end mb-4">
                     <div class="col-md-4">
-                        <select name="jenis_transaksi" id="jenis_transaksi"
-                            class="form-select">
+                        <select name="jenis_transaksi" id="jenis_transaksi" class="form-select">
                             <option value="">Semua</option>
                             <option value="pemasukan" {{ request('jenis_transaksi') == 'pemasukan' ? 'selected' : '' }}>
                                 Pemasukan</option>
@@ -103,11 +102,12 @@
                                                 <i class="bx bx-show"></i>
                                             </a>
                                             <form action="{{ route('keuangan.destroy', $row->id) }}" method="POST"
-                                                onsubmit="return confirm('Yakin mau hapus data ini?')" class="d-inline">
+                                                onsubmit="return confirmDelete(this);" class="d-inline">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-sm btn-outline-danger"><i
                                                         class="bx bx-trash"></i></button>
                                             </form>
+                                           
                                         </div>
                                     </td>
                                 </tr>
@@ -124,6 +124,56 @@
         </center>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(function() {
+            $("#search-petugas").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "{{ route('petugas.autocomplete') }}",
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 2
+            });
+        });
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            })
+        @endif
+
+        // SweetAlert Confirm Delete
+        function confirmDelete(form) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Yakin?',
+                text: "Data kendaraan akan dihapus!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#696cff',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
+    </script>
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

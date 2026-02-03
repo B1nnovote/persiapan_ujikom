@@ -91,13 +91,18 @@
                                         <td>{{ $row->dataKendaraan->no_polisi ?? '-' }}</td>
                                         <td>{{ ucfirst($row->dataKendaraan->jenis_kendaraan ?? '-') }}</td>
                                         <td>
-                                            <div class="btn-group">
-                                                <form action="{{ route('kendaraanmasuk.destroy', $row->id) }}"
-                                                    method="POST" onsubmit="return confirm('Yakin hapus?')">
-                                                    @csrf @method('DELETE')
-                                                    <button class="btn btn-sm btn-outline-danger"><i
-                                                            class="bx bx-trash"></i></button>
+                                            <div class="btn-group gap-2">
+                                                <form id="form-delete-{{ $row->id }}"
+                                                    action="{{ route('kendaraanmasuk.destroy', $row->id) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-sm btn-danger"
+                                                        onclick="confirmDelete({{ $row->id }})">
+                                                        <i class="bx bx-trash"></i>
+                                                    </button>
                                                 </form>
+
                                             </div>
                                         </td>
                                     </tr>
@@ -113,6 +118,37 @@
             </div>
         </center>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Yakin mau hapus?',
+                text: "Data kendaraan akan terhapus permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#696cff',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        @endif
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

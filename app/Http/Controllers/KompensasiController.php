@@ -1,11 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\KendaraanKeluar;
 use App\Models\KendaraanMasuk;
-use App\Models\Keuangan;
 use App\Models\Kompensasi;
-use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -142,64 +139,116 @@ class KompensasiController extends Controller
             'status'             => 'pending',
         ]);
 
-        if (Auth::user()->role == 1) {
-            return redirect()->route('frontend.index')->with('success', 'Kompensasi berhasil diajukan!');
+        $user = Auth::user();
+
+        if ($user->isAdmin === 1) {
+            return redirect()->route('kompensasi.index')
+                ->with('success', 'Kompensasi berhasil diajukan!');
         }
-        return redirect()->route('backend.index')->with('success', 'Kompensasi berhasil diajukan!');
+
+        return redirect()->route('frontend.index')
+            ->with('success', 'Kompensasi berhasil diajukan, menunggu keputusan admin');
     }
 
-    public function approve($id)
+    //baru1
+
+    public function approval($id)
     {
+        $kompensasi = Kompensasi::with('kendaraanMasuk.dataKendaraan')
+            ->findOrFail($id);
+
+        return view('backend.kompensasi.approval', compact('kompensasi'));
+    }
+
+    // public function approve($id)
+    // {
+    //     $kompensasi = Kompensasi::with('pembayaran')->findOrFail($id);
+
+    //     // update status kompensasi
+    //     $kompensasi->update([
+    //         'status'        => 'disetujui',
+    //         'diproses_pada' => now(),
+    //     ]);
+
+    //     // cari kendaraan keluar yang berkaitan
+    //     $keluar = KendaraanKeluar::where('id_kendaraan_masuk', $kompensasi->id_kendaraan_masuk)->first();
+
+    //     if (! $keluar) {
+    //         return back()->with('error', 'Kendaraan keluar tidak ditemukan.');
+    //     }
+
+    //     // buat pembayaran kompensasi (hanya jika belum ada)
+    //     $pembayaran = $kompensasi->pembayaran;
+
+    //     if (! $pembayaran) {
+    //         $pembayaran = Pembayaran::create([
+    //             'id_kendaraan_masuk'  => $kompensasi->id_kendaraan_masuk,
+    //             'id_kendaraan_keluar' => $keluar->id,
+    //             'id_kompensasi'       => $kompensasi->id,
+    //             'total'               => $kompensasi->jumlah,
+    //             'pembayaran'          => 'kompensasi',
+    //         ]);
+    //     }
+
+    //     // catat keuangan
+    //     Keuangan::create([
+    //         'id_pembayaran'   => $pembayaran->id,
+    //         'jumlah'          => $kompensasi->jumlah,
+    //         'jenis_transaksi' => 'pengeluaran',
+    //         'jenis_pemasukan' => 'kompensasi_keluar',
+    //         'keterangan'      => 'kompensasi_keluar',
+    //         'waktu_transaksi' => now(),
+    //     ]);
+
+    //     return redirect()->back()->with('success', 'Kompensasi disetujui dan dicatat keuangan.');
+    // }
+
+    public function approve(Request $request, $id)
+    {
+        $request->validate([
+            'jumlah'        => 'required|integer|min:1000',
+            'catatan_admin' => 'nullable|string|max:255',
+        ]);
+
         $kompensasi = Kompensasi::with('pembayaran')->findOrFail($id);
 
-        // update status kompensasi
         $kompensasi->update([
+            'jumlah'        => $request->jumlah,
             'status'        => 'disetujui',
             'diproses_pada' => now(),
+            'catatan_admin' => $request->catatan_admin,
         ]);
 
-        // cari kendaraan keluar yang berkaitan
-        $keluar = KendaraanKeluar::where('id_kendaraan_masuk', $kompensasi->id_kendaraan_masuk)->first();
-
-        if (! $keluar) {
-            return back()->with('error', 'Kendaraan keluar tidak ditemukan.');
-        }
-
-        // buat pembayaran kompensasi (hanya jika belum ada)
-        $pembayaran = $kompensasi->pembayaran;
-
-        if (! $pembayaran) {
-            $pembayaran = Pembayaran::create([
-                'id_kendaraan_masuk'  => $kompensasi->id_kendaraan_masuk,
-                'id_kendaraan_keluar' => $keluar->id,
-                'id_kompensasi'       => $kompensasi->id,
-                'total'               => $kompensasi->jumlah,
-                'pembayaran'          => 'kompensasi',
-            ]);
-        }
-
-        // catat keuangan
-        Keuangan::create([
-            'id_pembayaran'   => $pembayaran->id,
-            'jumlah'          => $kompensasi->jumlah,
-            'jenis_transaksi' => 'pengeluaran',
-            'jenis_pemasukan' => 'kompensasi_keluar',
-            'keterangan'      => 'kompensasi_keluar',
-            'waktu_transaksi' => now(),
-        ]);
-
-        return redirect()->back()->with('success', 'Kompensasi disetujui dan dicatat keuangan.');
+         return redirect()->route('kompensasi.index')
+            ->with('info', 'Kompensasi disetujui.');
     }
 
-    public function reject($id)
+    // function reject($id)
+    // {
+    //     $kompensasi = Kompensasi::findOrFail($id);
+    //     $kompensasi->update([
+    //         'status'        => 'ditolak',
+    //         'diproses_pada' => now(),
+    //     ]);
+
+    //     return redirect()->back()->with('info', 'Kompensasi ditolak.');
+    // }
+
+    public function reject(Request $request, $id)
     {
+        $request->validate([
+            'catatan_admin' => 'required|string|max:255',
+        ]);
+
         $kompensasi = Kompensasi::findOrFail($id);
         $kompensasi->update([
             'status'        => 'ditolak',
             'diproses_pada' => now(),
+            'catatan_admin' => $request->catatan_admin,
         ]);
 
-        return redirect()->back()->with('info', 'Kompensasi ditolak.');
+        return redirect()->route('kompensasi.index')
+            ->with('info', 'Kompensasi ditolak.');
     }
 
     public function edit($id)

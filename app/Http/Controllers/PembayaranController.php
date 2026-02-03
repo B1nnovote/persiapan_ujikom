@@ -6,17 +6,16 @@ use App\Models\KendaraanKeluar;
 use App\Models\KendaraanMasuk;
 use App\Models\Keuangan;
 use App\Models\Pembayaran;
+use App\Models\Tarif;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
-use Carbon\Carbon;
 use PDF;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Borders;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PembayaranController extends Controller
@@ -50,20 +49,13 @@ class PembayaranController extends Controller
         $jamMasuk  = Carbon::parse($masuk->waktu_masuk);
         $jamKeluar = Carbon::parse($kendaraanKeluar->waktu_keluar);
 
-        $durasiMenit = $jamMasuk->diffInMinutes($jamKeluar);
-        $durasiJam   = ceil($durasiMenit / 60);
-        $durasiJam   = $durasiJam == 0 ? 1 : $durasiJam;
+        $jenisKendaraan = $masuk->dataKendaraan->jenis_kendaraan ?? 'motor';
 
-        $tarif = $durasiJam * 2000;
+        $tarif = Tarif::where('jenis_kendaraan', $jenisKendaraan)
+            ->where('jenis_tarif', 'biasa')
+            ->first();
 
-        $denda = 0;
-        if (str_contains($kendaraanKeluar->status_kondisi, 'karcis hilang')) {
-            $denda = 10000;
-        } elseif (str_contains($kendaraanKeluar->status_kondisi, 'merusak')) {
-            $denda = 1000000;
-        }
-
-        $total = $tarif + $denda;
+        $total = $tarif ? $tarif->tarif : 0;
 
         return view('backend.pembayaran.create', [
             'keluar' => $kendaraanKeluar,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\KendaraanKeluar;
 use App\Models\KendaraanMasuk;
 use App\Models\StokLahan;
+use App\Models\Tarif;
 use Illuminate\Http\Request;
 use PDF;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -152,7 +153,6 @@ class ParkirKeluarController extends Controller
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Set judul kolom + styling tebal
     $headers = ['Plat Nomor', 'Jenis Kendaraan', 'Waktu Keluar', 'Status Kondisi'];
     $col = 'A';
     foreach ($headers as $header) {
