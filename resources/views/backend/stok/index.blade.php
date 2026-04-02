@@ -55,13 +55,13 @@
                                                 <i class="bx bx-edit-alt"></i>
 
 
-                                              
+{{--                                               
                                                     <a href="{{ route('stok.create') }}" class="btn ms-3"
                                                         style="background-color:#696cff; color:white;">
-                                                        <i class="bx bx-plus"></i> Tambah
+                                                        <i class="bx bx-plus"></i> Tambah --}}
                                                 @endif
-
-                                            </a>
+{{-- 
+                                            </a> --}}
                                             </a>
                                         </td>
                                     </tr>

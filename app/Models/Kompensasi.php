@@ -17,6 +17,7 @@ class Kompensasi extends Model
         'keterangan',
         'diajukan_pada',
         'diproses_pada',
+        'catatan_admin',
     ];
 
 

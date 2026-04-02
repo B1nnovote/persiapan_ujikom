@@ -225,8 +225,10 @@
                     <canvas id="grafikMasuk"></canvas>
                 </div>
 
+
                 <!-- Grafik Keuangan -->
-                <div
+
+                <div id="grafik-keuangan"
                     style="
         flex: 1;
         min-width: 400px;
@@ -236,8 +238,44 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         max-width: 600px;
     ">
-                    <h2 style="margin-bottom: 1rem; font-size: 1.25rem; color: #111;">Grafik Pemasukan & Pengeluaran per
-                        Bulan</h2>
+                    <form method="GET" action="{{ url('/backend') }}" style="margin-bottom: 1rem;">
+                        <div style="display:flex; justify-content:flex-start;">
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <label
+                                    style="
+                font-size: 13px;
+                color: #6b7280;
+                font-weight: 500;
+            ">
+                                    Rentang Waktu
+                                </label>
+
+                                <select name="range" onchange="handleRangeChange(this)"
+                                    style="
+                    padding: 8px 14px;
+                    border-radius: 8px;
+                    border: 1px solid #e5e7eb;
+                    font-size: 14px;
+                    background-color: #fff;
+                    color: #111;
+                    min-width: 150px;
+                    cursor: pointer;
+                ">
+                                    <option value="harian" {{ request('range') == 'harian' ? 'selected' : '' }}>Harian
+                                    </option>
+                                    <option value="mingguan" {{ request('range') == 'mingguan' ? 'selected' : '' }}>
+                                        Mingguan</option>
+                                    <option value="bulanan" {{ request('range') == 'bulanan' ? 'selected' : '' }}>
+                                        Bulanan</option>
+                                    <option value="tahunan" {{ request('range') == 'tahunan' ? 'selected' : '' }}>
+                                        Tahunan</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+
+
+                    {{-- <h2>{{ $judulGrafik }}</h2> --}}
                     <canvas id="grafikKeuangan"></canvas>
                 </div>
             </div>
@@ -248,90 +286,85 @@
     <!-- END CONTENT -->
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('grafikMasuk').getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(139, 92, 246, 0.5)');
-        gradient.addColorStop(1, 'rgba(139, 92, 246, 0.1)');
 
-        const chart = new Chart(ctx, {
+    <script>
+        /* ================= GRAFIK KENDARAAN MASUK ================= */
+        const ctxMasuk = document.getElementById('grafikMasuk').getContext('2d');
+
+        new Chart(ctxMasuk, {
             type: 'line',
             data: {
-                labels: {!! json_encode($labels) !!},
+                labels: {!! json_encode($labelsMasuk) !!},
                 datasets: [{
                     label: 'Jumlah Kendaraan Masuk',
                     data: {!! json_encode($dataMasuk) !!},
-                    backgroundColor: gradient,
                     borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
                     fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#8b5cf6'
+                    tension: 0.4
                 }]
             },
             options: {
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f3f4f6'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#f3f4f6'
-                        }
+                        beginAtZero: true
                     }
                 }
             }
         });
 
-        // Grafik Keuangan
+        /* ================= GRAFIK KEUANGAN ================= */
         const ctxKeuangan = document.getElementById('grafikKeuangan').getContext('2d');
 
-        const chartKeuangan = new Chart(ctxKeuangan, {
+        new Chart(ctxKeuangan, {
             type: 'line',
             data: {
-                labels: {!! json_encode($labels) !!},
+                labels: {!! json_encode($labelsKeuangan) !!},
                 datasets: [{
                         label: 'Pemasukan',
                         data: {!! json_encode($dataPemasukan) !!},
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#10b981'
+                        borderColor: '#22c55e',
+                        tension: 0.4
                     },
                     {
                         label: 'Pengeluaran',
                         data: {!! json_encode($dataPengeluaran) !!},
                         borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#ef4444'
+                        tension: 0.4
                     }
                 ]
             },
             options: {
                 responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#f3f4f6'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: '#f3f4f6'
-                        }
+                plugins: {
+                    legend: {
+                        position: 'top'
                     }
                 }
             }
         });
     </script>
 
+    <script>
+        function handleRangeChange(select) {
+            localStorage.setItem('scrollToGrafik', 'true');
+            select.form.submit();
+        }
+
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('scrollToGrafik')) {
+                const grafik = document.getElementById('grafik-keuangan');
+                if (grafik) {
+                    grafik.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                localStorage.removeItem('scrollToGrafik');
+            }
+        });
+    </script>
 
 </body>
 

@@ -2,14 +2,14 @@
 
 @section('content')
 <br><br><br>
-<div class="container mt-5">
+<div class="container mt-5 ">
     <div class="row justify-content-center align-items-center">
         <div class="col-md-8">
             <div class="card shadow-lg border-0">
                 <div class="row g-0">
                     <!-- Gambar Kiri -->
                     <div class="col-md-6 d-none d-md-block">
-                        <img src="{{ asset('assets/parkiran/parkiran1.png') }}" alt="Gambar Parkiran" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                        <img src="{{ asset('assets/parkiran/parkir.png') }}" alt="Gambar Parkiran" class="img-fluid h-100 w-100" style="object-fit: cover;">
                     </div>
 
                     <!-- Form Login -->

@@ -1,5 +1,7 @@
 <?php
 
+
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataKendaraanController;
 use App\Http\Controllers\KeuanganController;
@@ -11,7 +13,6 @@ use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\StokLahanController;
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\Petugas;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -23,6 +24,10 @@ Auth::routes();
 Route::get('/frontend', function () {
     return view('frontend.index');
 })->middleware('auth');
+
+// grafik petugas
+Route::get('/dashboard-petugas', [PembayaranController::class, 'dashboardPetugas'])
+    ->name('dashboard.petugas');
 
 // filter-export data kendaraan
 Route::get('/datakendaraan/autocomplete', [DataKendaraanController::class, 'autocomplete'])->name('datakendaraan.autocomplete');
@@ -104,9 +109,14 @@ Route::middleware(['auth', Admin::class])->group(function () {
     Route::get('/kompensasi', [KompensasiController::class, 'index'])->name('kompensasi.index');
     Route::get('/kompensasi/{id}/approval', [KompensasiController::class, 'approval'])
         ->name('kompensasi.approval');
+        
+    Route::get('/kompensasi/{id}', [KompensasiController::class, 'show'])
+        ->name('kompensasi.show');
+
     Route::put('/kompensasi/{id}/approve', [KompensasiController::class, 'approve'])->name('kompensasi.approve');
     Route::put('/kompensasi/{id}/reject', [KompensasiController::class, 'reject'])->name('kompensasi.reject');
 
     Route::resource('petugas', PetugasController::class);
 
 });
+

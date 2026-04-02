@@ -17,12 +17,12 @@
 
     .karcis-box {
       border: 1px dashed #999;
-      padding: 20px 14px;
-      width: 20%;
+      padding: 50px 14px;
+      width: 300px;
       margin: auto;
       background-color: #fff;
       font-size: 12px;
-      line-height: 1.4;
+      line-height: 1.9;
     }
 
     .karcis-title {
@@ -90,6 +90,8 @@
     </table>
 
     <div class="info">
+      <br>
+      <p style="font-size:14px"><strong>Kode Tiket:</strong> {{ $kode_tiket }}</p>
       Simpan karcis ini<br>
       Wajib ditunjukkan saat keluar
     </div>

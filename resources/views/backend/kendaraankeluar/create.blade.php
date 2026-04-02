@@ -74,6 +74,7 @@
                                     <option value="">-- Pilih Kendaraan --</option>
                                     @foreach ($parkirAktif as $item)
                                         <option value="{{ $item->id }}">
+                                              {{ $item->kode_tiket }} -
                                             {{ $item->dataKendaraan->no_polisi }} -
                                             {{ ucfirst($item->dataKendaraan->jenis_kendaraan) }}
                                         </option>

@@ -57,6 +57,14 @@ class PembayaranController extends Controller
 
         $total = $tarif ? $tarif->tarif : 0;
 
+        $statusKondisi = strtolower($kendaraanKeluar->status_kondisi);
+
+        if (str_contains($statusKondisi, 'karcis hilang')) {
+            $total += 10000;
+        } elseif (str_contains($statusKondisi, 'merusak')) {
+            $total += 50000;
+        }
+
         return view('backend.pembayaran.create', [
             'keluar' => $kendaraanKeluar,
             'masuk'  => $masuk,
@@ -89,9 +97,11 @@ class PembayaranController extends Controller
         $statusKondisi = $pembayaran->kendaraanKeluar->status_kondisi;
 
         // === Catat pemasukan utama ===
+        $pembayaran->update(['total' => $request->total]);
+
         Keuangan::create([
             'id_pembayaran'   => $pembayaran->id,
-            'jumlah'          => $pembayaran->total,
+            'jumlah'          => $request->total,
             'keterangan'      => $this->tentukanJenisPemasukan($statusKondisi),
             'jenis_transaksi' => 'pemasukan',
             'waktu_transaksi' => now(),
@@ -224,6 +234,23 @@ class PembayaranController extends Controller
         $writer->save($tempFile);
 
         return Response::download($tempFile, $filename)->deleteFileAfterSend(true);
+    }
+
+    public function dashboardPetugas()
+    {
+        $id_petugas = Auth::id();
+
+        $grafikPetugas = Pembayaran::select(
+            DB::raw('DATE(created_at) as tanggal'),
+            DB::raw('SUM(total) as total')
+        )
+            ->where('id_petugas', $id_petugas)
+            ->groupBy('tanggal')
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        return view('frontend.index', compact('grafikPetugas'));
+
     }
 
 }

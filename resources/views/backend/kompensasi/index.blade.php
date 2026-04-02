@@ -132,15 +132,20 @@
                                             {{-- Tombol Setujui --}}
                                             <a href="{{ route('kompensasi.approval', $item->id) }}"
                                                 class="btn btn-primary btn-sm">
-                                                <i class="bx bx-show"></i> Persetujuan 
+                                                <i class="bx bx-show"></i> Persetujuan
                                             </a>
                                             {{-- Tombol Edit --}}
-                                            @if ($item->status !== 'disetujui')
+                                            {{-- @if ($item->status !== 'disetujui')
                                                 <a href="{{ route('kompensasi.edit', $item->id) }}"
                                                     class="btn btn-warning btn-sm">
                                                     <i class="bx bx-edit"></i>
                                                 </a>
-                                            @endif
+                                            @endif --}}
+                                            <a href="{{ route('kompensasi.show', $item->id) }}"
+                                                class="btn btn-sm btn-info">
+                                                👁 Preview
+                                            </a>
+
                                         </td>
 
 

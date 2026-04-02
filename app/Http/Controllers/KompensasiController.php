@@ -219,8 +219,8 @@ class KompensasiController extends Controller
             'catatan_admin' => $request->catatan_admin,
         ]);
 
-         return redirect()->route('kompensasi.index')
-            ->with('info', 'Kompensasi disetujui.');
+        return redirect()->route('kompensasi.index')
+            ->with('info', 'Kompensasi disetujuitad.');
     }
 
     // function reject($id)
@@ -271,6 +271,14 @@ class KompensasiController extends Controller
         ]);
 
         return redirect()->route('kompensasi.index')->with('success', 'Data kompensasi berhasil diperbarui!');
+    }
+
+    public function show($id)
+    {
+        $kompensasi = Kompensasi::with('kendaraanMasuk.dataKendaraan')
+            ->findOrFail($id);
+
+        return view('backend.kompensasi.show', compact('kompensasi'));
     }
 
 }

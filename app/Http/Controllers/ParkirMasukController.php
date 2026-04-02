@@ -43,6 +43,49 @@ class ParkirMasukController extends Controller
         return view('backend.kendaraanmasuk.create');
     }
 
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'no_polisi'       => 'required|string|max:20',
+    //         'jenis_kendaraan' => 'required|in:mobil,motor',
+    //         'waktu_masuk'     => 'required|date',
+    //         'status_parkir'   => 'required|in:sedang parkir',
+    //     ]);
+
+    //     $stok = StokLahan::where('jenis_kendaraan', $request->jenis_kendaraan)->first();
+
+    //     if (! $stok || $stok->terpakai >= $stok->total_slot) {
+    //         return redirect()->back()->with('error', 'Slot parkir untuk ' . $request->jenis_kendaraan . ' penuh.');
+    //     }
+
+    //     $dataKendaraan = DataKendaraan::firstOrCreate(
+    //         ['no_polisi' => $request->no_polisi],
+    //         [
+    //             'jenis_kendaraan' => $request->jenis_kendaraan,
+    //             'pemilik'         => null,
+    //             'status_pemilik'  => 'tamu',
+    //         ]
+    //     );
+
+    //     $sudahParkir = KendaraanMasuk::where('id_kendaraan', $dataKendaraan->id)
+    //         ->where('status_parkir', 'sedang parkir')
+    //         ->exists();
+
+    //     if ($sudahParkir) {
+    //         return redirect()->back()->with('error', 'Kendaraan ini sedang parkir.');
+    //     }
+
+    //     $kendaraanMasuk = KendaraanMasuk::create([
+    //         'waktu_masuk'   => $request->waktu_masuk ?? now(),
+    //         'status_parkir' => $request->status_parkir,
+    //         'id_kendaraan'  => $dataKendaraan->id,
+    //     ]);
+
+    //     $stok->increment('terpakai');
+
+    //     return redirect()->route('kendaraanmasuk.karcis.karcis', $kendaraanMasuk->id);
+    // }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -58,6 +101,7 @@ class ParkirMasukController extends Controller
             return redirect()->back()->with('error', 'Slot parkir untuk ' . $request->jenis_kendaraan . ' penuh.');
         }
 
+        // ambil atau buat data kendaraan
         $dataKendaraan = DataKendaraan::firstOrCreate(
             ['no_polisi' => $request->no_polisi],
             [
@@ -67,6 +111,7 @@ class ParkirMasukController extends Controller
             ]
         );
 
+        // cek kalau kendaraan masih parkir
         $sudahParkir = KendaraanMasuk::where('id_kendaraan', $dataKendaraan->id)
             ->where('status_parkir', 'sedang parkir')
             ->exists();
@@ -75,10 +120,15 @@ class ParkirMasukController extends Controller
             return redirect()->back()->with('error', 'Kendaraan ini sedang parkir.');
         }
 
+        // generate kode tiket otomatis
+        $kodeTiket = KendaraanMasuk::generateKodeTiket($request->jenis_kendaraan);
+
+        // simpan kendaraan masuk
         $kendaraanMasuk = KendaraanMasuk::create([
-            'waktu_masuk'   => $request->waktu_masuk ?? now(),
-            'status_parkir' => $request->status_parkir,
-            'id_kendaraan'  => $dataKendaraan->id,
+            'waktu_masuk'     => $request->waktu_masuk ?? now(),
+            'status_parkir'   => $request->status_parkir,
+            'id_kendaraan'    => $dataKendaraan->id,
+            'kode_tiket'      => $kodeTiket,
         ]);
 
         $stok->increment('terpakai');
@@ -104,10 +154,11 @@ class ParkirMasukController extends Controller
             ->where('jenis_tarif', 'biasa')
             ->first();
 
-        $kodeTiket = $tarif?->kode_tiket ?? '-';
+        // $kodeTiket = $tarif?->kode_tiket ?? '-';
+        $kodeTiket = $data->kode_tiket ?? '-';
 
         return view('backend.kendaraanmasuk.karcis.karcis', [
-            'data'      => $data,
+            'data'       => $data,
             'kode_tiket' => $kodeTiket,
         ]);
     }
