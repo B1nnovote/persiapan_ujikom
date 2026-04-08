@@ -119,4 +119,3 @@ Route::middleware(['auth', Admin::class])->group(function () {
     Route::resource('petugas', PetugasController::class);
 
 });
-
