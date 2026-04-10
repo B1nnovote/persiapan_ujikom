@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('tarifs', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_tiket', 10);
+            $table->string('kode_tiket', 10)->nullable();
             $table->enum('jenis_kendaraan', ['motor', 'mobil']);
             $table->enum('jenis_tarif', ['biasa', 'menginap']);
             $table->integer('tarif');
-            $table->timestamps(); 
+            $table->timestamps();
         });
 
     }

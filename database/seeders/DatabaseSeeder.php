@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
             StokSeeder::class,
             // CategorySeeder::class,
 
+            TarifSeeder::class,
+
         ]);
     }
 }

@@ -109,7 +109,6 @@
                                         'karcis hilang',
                                         'kerusakan',
                                         'kehilangan',
-                                        'merusak fasilitas',
                                     ];
                                 @endphp
 
