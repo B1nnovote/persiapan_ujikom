@@ -35,13 +35,11 @@
                             <i class="bx bx-plus"></i> Tambah
                         </a>
 
-                        <a href="{{ route('datakendaraan.export.pdf', request()->query()) }}"
-                            class="btn btn-danger">
+                        <a href="{{ route('datakendaraan.export.pdf', request()->query()) }}" class="btn btn-danger">
                             <i class="bx bxs-file-pdf"></i> Export PDF
                         </a>
 
-                        <a href="{{ route('datakendaraan.export.excel', request()->query()) }}"
-                            class="btn btn-success">
+                        <a href="{{ route('datakendaraan.export.excel', request()->query()) }}" class="btn btn-success">
                             <i class="bx bxs-file-export"></i> Export Excel
                         </a>
                     </div>
@@ -49,6 +47,28 @@
 
                 <!-- Search -->
                 <form action="{{ route('datakendaraan.index') }}" method="GET" class="mb-3">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <!-- Dropdown jumlah data -->
+                        <form method="GET" action="">
+                            <label class="me-2">Tampilkan:</label>
+                            <select name="per_page" class="form-select d-inline-block w-auto"
+                                onchange="this.form.submit()">
+                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
+                                <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>30</option>
+                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>Semua
+                                </option>
+                            </select>
+
+                            <!-- biar search ga hilang -->
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        </form>
+
+                    </div>
+
                     <div class="input-group" style="max-width: 500px;">
                         <input type="text" id="search-kendaraan" name="search" class="form-control"
                             placeholder="Cari plat nomor, jenis, atau status pemilik..."
@@ -74,7 +94,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php $no = 1; @endphp
+                                    {{-- @php $no = 1; @endphp --}}
+                                    @php
+                                        $no = method_exists($dataKendaraan, 'firstItem')
+                                            ? $dataKendaraan->firstItem()
+                                            : 1;
+                                    @endphp
                                     @foreach ($dataKendaraan as $data)
                                         <tr>
                                             <td>{{ $no++ }}</td>
@@ -113,6 +138,12 @@
                                     @endif
                                 </tbody>
                             </table>
+
+                            @if (method_exists($dataKendaraan, 'links'))
+                                <div class="mt-3">
+                                    {{ $dataKendaraan->appends(request()->query())->links() }}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

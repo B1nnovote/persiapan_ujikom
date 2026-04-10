@@ -15,10 +15,29 @@ class DataKendaraanController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(Request $request)
-    {
+    // public function index(Request $request)
+    // {
+    //     $query = DataKendaraan::query();
+
+    //     if ($request->filled('search')) {
+    //         $search = strtolower($request->search);
+    //         $query->where(function ($q) use ($search) {
+    //             $q->whereRaw("LOWER(CONCAT(no_polisi, ' - ', jenis_kendaraan, ' - ', status_pemilik)) LIKE ?", ["%{$search}%"])
+    //                 ->orWhereRaw('LOWER(no_polisi) LIKE ?', ["%{$search}%"])
+    //                 ->orWhereRaw('LOWER(jenis_kendaraan) LIKE ?', ["%{$search}%"])
+    //                 ->orWhereRaw('LOWER(status_pemilik) LIKE ?', ["%{$search}%"]);
+    //         });
+    //     }
+
+    //     $dataKendaraan = $query->latest()->paginate(10);
+
+    //     return view('backend.datakendaraan.index', compact('dataKendaraan'));
+    // }
+
+    functionpublic index(Request $request) {
         $query = DataKendaraan::query();
 
+        // 🔍 SEARCH (punya kamu - ga diubah)
         if ($request->filled('search')) {
             $search = strtolower($request->search);
             $query->where(function ($q) use ($search) {
@@ -29,9 +48,16 @@ class DataKendaraanController extends Controller
             });
         }
 
-        $dataKendaraan = $query->latest()->paginate(10);
+        // 🔥 TAMBAHAN FILTER JUMLAH DATA
+        $perPage = $request->get('per_page', 10);
 
-        return view('backend.datakendaraan.index', compact('dataKendaraan'));
+        if ($perPage == 'all') {
+            $dataKendaraan = $query->latest()->get();
+        } else {
+            $dataKendaraan = $query->latest()->paginate($perPage);
+        }
+
+        return view('backend.datakendaraan.index', compact('dataKendaraan', 'perPage'));
     }
 
     public function create()
