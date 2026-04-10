@@ -34,7 +34,8 @@ class DataKendaraanController extends Controller
     //     return view('backend.datakendaraan.index', compact('dataKendaraan'));
     // }
 
-    functionpublic index(Request $request) {
+    public function index(Request $request)
+    {
         $query = DataKendaraan::query();
 
         // 🔍 SEARCH (punya kamu - ga diubah)
