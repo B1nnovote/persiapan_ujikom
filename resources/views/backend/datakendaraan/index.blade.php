@@ -134,12 +134,6 @@
                                     @endif
                                 </tbody>
                             </table>
-
-                            @if (method_exists($dataKendaraan, 'links'))
-                                <div class="mt-3">
-                                    {{ $dataKendaraan->appends(request()->query())->links() }}
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>
