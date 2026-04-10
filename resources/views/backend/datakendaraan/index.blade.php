@@ -48,27 +48,23 @@
                 <!-- Search -->
                 <form action="{{ route('datakendaraan.index') }}" method="GET" class="mb-3">
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <form method="GET" action="{{ route('datakendaraan.index') }}">
+                        <label class="me-2">Tampilkan:</label>
+                        <select name="per_page" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
 
-                        <!-- Dropdown jumlah data -->
-                        <form method="GET" action="">
-                            <label class="me-2">Tampilkan:</label>
-                            <select name="per_page" class="form-select d-inline-block w-auto"
-                                onchange="this.form.submit()">
-                                <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
-                                <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
-                                <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>30</option>
-                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                                <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>Semua
-                                </option>
-                            </select>
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
+                            <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>30</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>Semua</option>
+                        </select>
 
-                            <!-- biar search ga hilang -->
-                            <input type="hidden" name="search" value="{{ request('search') }}">
-                        </form>
+                        <!-- ini penting -->
+                        <input type="hidden" name="page" value="1">
 
-                    </div>
-
+                        <!-- biar search ga ilang -->
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    </form>
                     <div class="input-group" style="max-width: 500px;">
                         <input type="text" id="search-kendaraan" name="search" class="form-control"
                             placeholder="Cari plat nomor, jenis, atau status pemilik..."
@@ -94,12 +90,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- @php $no = 1; @endphp --}}
-                                    @php
+                                    @php $no = 1; @endphp
+                                    {{-- @php
                                         $no = method_exists($dataKendaraan, 'firstItem')
                                             ? $dataKendaraan->firstItem()
                                             : 1;
-                                    @endphp
+                                    @endphp --}}
                                     @foreach ($dataKendaraan as $data)
                                         <tr>
                                             <td>{{ $no++ }}</td>
