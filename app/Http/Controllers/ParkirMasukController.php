@@ -125,10 +125,10 @@ class ParkirMasukController extends Controller
 
         // simpan kendaraan masuk
         $kendaraanMasuk = KendaraanMasuk::create([
-            'waktu_masuk'     => $request->waktu_masuk ?? now(),
-            'status_parkir'   => $request->status_parkir,
-            'id_kendaraan'    => $dataKendaraan->id,
-            'kode_tiket'      => $kodeTiket,
+            'waktu_masuk'   => $request->waktu_masuk ?? now(),
+            'status_parkir' => $request->status_parkir,
+            'id_kendaraan'  => $dataKendaraan->id,
+            'kode_tiket'    => $kodeTiket,
         ]);
 
         $stok->increment('terpakai');
@@ -183,6 +183,18 @@ class ParkirMasukController extends Controller
             ->setPaper('A4', 'portrait');
 
         return $pdf->download('data_parkir_masuk.pdf');
+    }
+
+    public function cetakPDF($id)
+    {
+        $data = KendaraanMasuk::with('dataKendaraan')->findOrFail($id);
+
+        $pdf = PDF::loadView('backend.kendaraanmasuk.karcis.karcis', [
+            'data'       => $data,
+            'kode_tiket' => $data->kode_tiket ?? '-',
+        ])->setPaper([0, 0, 226.77, 340.16]); // ukuran kecil kayak struk (opsional)
+
+        return $pdf->download('tiket-parkir.pdf');
     }
 
     public function exportExcel(Request $request)

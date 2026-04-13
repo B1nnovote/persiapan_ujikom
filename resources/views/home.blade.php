@@ -8,7 +8,7 @@
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<!-- My CSS -->
 	<link rel="stylesheet" href="{{asset('assets/backend/style.css')}}">
-	<title>AdminHub</title>
+	<title>Parkir di sini</title>
 </head>
 <body>
 
